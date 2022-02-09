@@ -12,12 +12,6 @@ module Hunter =
 
     let clean = trim >> toLower
 
-    let onlyAlpha (word: string) =
-        word
-        |> Seq.map System.Char.IsLetter
-        |> Seq.filter (fun b -> not b)
-        |> Seq.isEmpty
-
     let withMoreLettersThan (containingLetters: seq<char>) (wordsByLength: KeyValuePair<int, IList<string>>) =
         let count =
             containingLetters
@@ -89,7 +83,7 @@ module Hunter =
             Set(containingLettersClean)
 
         let startsWithClean =
-            containingLetters |> clean
+            startsWith |> clean
 
         let endsWithClean =
             endsWith |> clean
