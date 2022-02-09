@@ -1,17 +1,38 @@
-﻿using WordHunder.Lib;
+﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
+using WordHunder.Lib;
+using static WordHunter.Library.Hunter;
 
-var hunter = new Hunter();
+BenchmarkRunner.Run<Benchy>();
 
-var words =
-    hunter.FindWords(
-        containingLetters: "atch",
-        excludedLetters: "firsplnb",
-        inTheMiddle: "",
-        startsWith: "",
-        endsWith: "atch",
-        letterCount: 5);
-
-foreach (var word in words)
+[MemoryDiagnoser]
+public class Benchy
 {
-    Console.WriteLine(word);
+    public static Hunter hunter = new Hunter();
+
+    [Benchmark]
+    public void CSharp()
+    {
+        var words =
+            hunter.FindWords(
+                containingLetters: "atch",
+                excludedLetters: "firsplnb",
+                inTheMiddle: "",
+                startsWith: "",
+                endsWith: "atch",
+                letterCount: 5);
+    }
+
+    [Benchmark]
+    public void FSharp()
+    {
+        var words2 =
+            findWords(
+                containingLetters: "atch",
+                startsWith: "",
+                endsWith: "atch",
+                inTheMiddle: "",
+                excludingLetters: "firsplnb",
+                wordLength: 5);
+    }
 }

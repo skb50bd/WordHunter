@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WordHunder.Lib\WordHunder.Lib.csproj" />
+    <ProjectReference Include="..\WordHunter.Library\WordHunter.Library.fsproj" />
   </ItemGroup>
 
 </Project>

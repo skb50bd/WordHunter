@@ -8,6 +8,7 @@ public class Hunter
     {
         _wordsDict =
             File.ReadAllLines("words.txt")
+                .Where(w => w.All(ch => char.IsLetter(ch)))
                 .Select(w => w.Trim().ToLowerInvariant())
                 .GroupBy(w => w.Length)
                 .OrderBy(g => g.Key)
@@ -15,7 +16,6 @@ public class Hunter
                     g => g.Key,
                     g => g.ToList() as IList<string>
                 );
-
     }
 
     public IList<string> FindWords(
