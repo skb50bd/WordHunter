@@ -1,7 +1,7 @@
 ﻿namespace WordHunter.Library
 
-open System.IO;
 open System.Collections.Generic
+open WordHunter.WordList
 
 module Hunter =
     let trim (word: string) =
@@ -18,17 +18,7 @@ module Hunter =
         |> Seq.filter (fun b -> not b)
         |> Seq.isEmpty
 
-    let words =
-        File.ReadAllLines("words.txt")
-        |> Seq.map toLower
-        |> Seq.filter onlyAlpha
-
-    let wordsByLength =
-        words
-        |> Seq.groupBy (fun word ->  word.Length)
-        |> dict
-
-    let withMoreLettersThan (containingLetters: seq<char>) (wordsByLength: KeyValuePair<int, string seq>) =
+    let withMoreLettersThan (containingLetters: seq<char>) (wordsByLength: KeyValuePair<int, IList<string>>) =
         let count =
             containingLetters
             |> Seq.length
@@ -37,7 +27,7 @@ module Hunter =
         | 0 -> true
         | _ -> wordsByLength.Key >= count
 
-    let withMaybeLetterCount count (wordsByLength: KeyValuePair<int, string seq>) =
+    let withMaybeLetterCount count (wordsByLength: KeyValuePair<int, IList<string>>) =
         match count with
         | Some 0 -> failwith "Invalid Letter Count"
         | Some x -> wordsByLength.Key = x
@@ -114,7 +104,7 @@ module Hunter =
             Set(excludingLettersClean)
 
         let matchingWords =
-            wordsByLength
+            Words.WordsByLength
             |> Seq.filter (fun kv -> withMoreLettersThan containingLettersSet kv)
             |> Seq.filter (fun kv -> withMaybeLetterCount wordLength kv)
             |> Seq.collect (fun kv -> kv.Value)

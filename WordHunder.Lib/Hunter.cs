@@ -1,23 +1,9 @@
-﻿namespace WordHunder.Lib;
+﻿using WordHunter.WordList;
+
+namespace WordHunder.Lib;
 
 public class Hunter
 {
-    private readonly IDictionary<int, IList<string>> _wordsDict;
-
-    public Hunter()
-    {
-        _wordsDict =
-            File.ReadAllLines("words.txt")
-                .Where(w => w.All(ch => char.IsLetter(ch)))
-                .Select(w => w.Trim().ToLowerInvariant())
-                .GroupBy(w => w.Length)
-                .OrderBy(g => g.Key)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.ToList() as IList<string>
-                );
-    }
-
     public IList<string> FindWords(
         string containingLetters = "",
         string startsWith = "",
@@ -57,20 +43,18 @@ public class Hunter
         if (letterCount is not null)
         {
             matchingWords =
-                _wordsDict[letterCount.Value];
+                Words.WordsByLength[letterCount.Value];
         }
         else if (containingLetters.Length > 0)
         {
             matchingWords =
-                _wordsDict
+                Words.WordsByLength
                     .Where(kv => kv.Key >= containingLetters.Length)
                     .SelectMany(kv => kv.Value);
         }
         else
         {
-            matchingWords =
-                _wordsDict
-                    .SelectMany(kv => kv.Value);
+            matchingWords = Words.AllWords;
         }
 
         var excludedLettersSet =

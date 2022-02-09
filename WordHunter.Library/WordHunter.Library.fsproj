@@ -6,12 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="words.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Compile Include="Library.fs" />
   </ItemGroup>
 
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\WordHunter.WordList\WordHunter.WordList.csproj" />
+  </ItemGroup>
 
 </Project>
