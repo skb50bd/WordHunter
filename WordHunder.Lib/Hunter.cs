@@ -78,29 +78,18 @@ public class Hunter
                 .ToCharArray()
                 .ToHashSet();
 
-        if (containingLetters.Length > 0)
-        {
-            matchingWords =
-                matchingWords
-                    .Where(w =>
-                    {
-                        foreach (var ch in containingLetters)
-                        {
-                            if (w.Contains(ch) is false)
-                            {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    });
-        }
-
         if (startsWith.Length > 0)
         {
             matchingWords =
                 matchingWords
                     .Where(w => w.StartsWith(startsWith));
+        }
+
+        if (endsWith.Length > 0)
+        {
+            matchingWords =
+                matchingWords
+                    .Where(w => w.EndsWith(endsWith));
         }
 
         if (inTheMiddle.Length > 0)
@@ -118,11 +107,22 @@ public class Hunter
                     });
         }
 
-        if (endsWith.Length > 0)
+        if (containingLetters.Length > 0)
         {
             matchingWords =
                 matchingWords
-                    .Where(w => w.EndsWith(endsWith));
+                    .Where(w =>
+                    {
+                        foreach (var ch in containingLetters)
+                        {
+                            if (w.Contains(ch) is false)
+                            {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    });
         }
 
         if (excludedLetters.Length > 0)

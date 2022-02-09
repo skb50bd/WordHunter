@@ -10,6 +10,8 @@ module Hunter =
     let toLower (word: string) =
         word.ToLower()
 
+    let clean = trim >> toLower
+
     let onlyAlpha (word: string) =
         word
         |> Seq.map System.Char.IsLetter
@@ -26,12 +28,10 @@ module Hunter =
         |> Seq.groupBy (fun word ->  word.Length)
         |> dict
 
-    let withMoreLettersThan containingLetters (wordsByLength: KeyValuePair<int, string seq>) =
+    let withMoreLettersThan (containingLetters: seq<char>) (wordsByLength: KeyValuePair<int, string seq>) =
         let count =
             containingLetters
-            |> trim
-            |> toLower
-            |> fun x -> x.Length
+            |> Seq.length
 
         match count with
         | 0 -> true
@@ -59,14 +59,14 @@ module Hunter =
         | 0 -> true
         | _ -> word.EndsWith(cleanStr)
 
-    let maybeContains str (word: string) =
-        Set(str |> trim |> toLower)
+    let maybeContains (containingSet: seq<char>) (word: string) =
+        containingSet
         |> Seq.map (fun ch -> word.Contains(ch))
         |> Seq.filter (fun b -> not b)
         |> Seq.isEmpty
 
-    let maybeExcluding str (word: string) =
-        Set(str |> trim |> toLower)
+    let maybeExcluding (excludingSet: seq<char>) (word: string) =
+        excludingSet
         |> Seq.map (fun ch -> word.Contains(ch))
         |> Seq.filter (fun b -> b)
         |> Seq.isEmpty
@@ -92,16 +92,37 @@ module Hunter =
         (excludingLetters: string)
         (wordLength: int option) =
 
+        let containingLettersClean =
+            containingLetters |> clean
+
+        let containingLettersSet =
+            Set(containingLettersClean)
+
+        let startsWithClean =
+            containingLetters |> clean
+
+        let endsWithClean =
+            endsWith |> clean
+
+        let inTheMiddleClean =
+            inTheMiddle |> clean
+
+        let excludingLettersClean =
+            excludingLetters |> clean
+
+        let excludingLettersSet =
+            Set(excludingLettersClean)
+
         let matchingWords =
             wordsByLength
-            |> Seq.filter (fun kv -> withMoreLettersThan containingLetters kv)
+            |> Seq.filter (fun kv -> withMoreLettersThan containingLettersSet kv)
             |> Seq.filter (fun kv -> withMaybeLetterCount wordLength kv)
             |> Seq.collect (fun kv -> kv.Value)
-            |> Seq.filter (fun word -> maybeStartsWith startsWith word)
-            |> Seq.filter (fun word -> maybeEndsWith endsWith word)
-            |> Seq.filter (fun word -> maybeContains containingLetters word)
-            |> Seq.filter (fun word -> maybeExcluding excludingLetters word)
-            |> Seq.filter (fun word -> maybeInTheMiddle inTheMiddle word)
+            |> Seq.filter (fun word -> maybeStartsWith startsWithClean word)
+            |> Seq.filter (fun word -> maybeEndsWith endsWithClean word)
+            |> Seq.filter (fun word -> maybeInTheMiddle inTheMiddleClean word)
+            |> Seq.filter (fun word -> maybeContains containingLettersSet word)
+            |> Seq.filter (fun word -> maybeExcluding excludingLettersSet word)
             |> Seq.toList
 
         matchingWords
