@@ -1,14 +1,20 @@
-﻿namespace WordHunter.WordList;
+﻿namespace WordHunter.Services;
 
-public static class Words
+public class Words
 {
-    public static IDictionary<int, IList<string>> WordsByLength { get; }
-    public static IList<string> AllWords { get; }
+    public IDictionary<int, IList<string>> WordsByLength { get; }
+    public IList<string> AllWords { get; }
 
-    static Words()
+    public Words()
     {
+        var execPath =
+            AppDomain.CurrentDomain.BaseDirectory;
+
+        var dataFilePath =
+            Path.Combine(execPath, "words.txt");
+
         AllWords =
-            File.ReadAllLines("words.txt")
+            File.ReadAllLines(dataFilePath)
                 .Where(w => w.All(ch => char.IsLetter(ch)))
                 .Select(w => w.Trim().ToLowerInvariant())
                 .ToList();

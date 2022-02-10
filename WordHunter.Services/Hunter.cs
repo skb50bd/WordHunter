@@ -1,9 +1,14 @@
-﻿using WordHunter.WordList;
-
-namespace WordHunder.Lib;
+﻿namespace WordHunter.Services;
 
 public class Hunter
 {
+    private readonly Words _words;
+
+    public Hunter(Words words)
+    {
+        _words = words;
+    }
+
     public IList<string> FindWords(
         string containingLetters = "",
         string startsWith = "",
@@ -40,21 +45,23 @@ public class Hunter
         IEnumerable<string> matchingWords =
             new List<string>();
 
-        if (letterCount is not null)
+        if (letterCount is > 0)
         {
             matchingWords =
-                Words.WordsByLength[letterCount.Value];
+                _words.WordsByLength.ContainsKey(letterCount.Value)
+                    ? _words.WordsByLength[letterCount.Value]
+                    : new string[0];
         }
         else if (containingLetters.Length > 0)
         {
             matchingWords =
-                Words.WordsByLength
+                _words.WordsByLength
                     .Where(kv => kv.Key >= containingLetters.Length)
                     .SelectMany(kv => kv.Value);
         }
         else
         {
-            matchingWords = Words.AllWords;
+            matchingWords = _words.AllWords;
         }
 
         var excludedLettersSet =

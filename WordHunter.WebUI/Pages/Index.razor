@@ -1,0 +1,135 @@
+﻿@page "/"
+@using System.Text.Json
+@using WordHunter.Models
+@inject HttpClient Http
+
+<PageTitle>Word Hunter</PageTitle>
+
+<h1>Word Hunter</h1>
+
+<EditForm Model="Request"
+          OnSubmit="FindWord">
+
+    <label for="containing-letters">
+        Containing Letters
+    </label>
+
+    <InputText
+        id="containing-letters"
+        @bind-Value="@Request.ContainingLetters" />
+
+    <br/>
+
+    <label for="starts-with">
+        Starts With
+    </label>
+
+    <InputText
+        id="starts-with"
+        @bind-Value="@Request.StartsWith" />
+
+    <br/>
+
+
+    <label for="ends-with">
+        Ends With
+    </label>
+
+    <InputText
+        id="ends-with"
+        @bind-Value="@Request.EndsWith" />
+
+    <br/>
+
+    <label for="in-the-middle">
+        In The Middle
+    </label>
+
+    <InputText
+        id="in-the-middle"
+        @bind-Value="@Request.InTheMiddle" />
+
+    <br/>
+
+    <label for="excluding-letters">
+        Excluding Letters
+    </label>
+
+    <InputText
+        id="excluding-letters"
+        @bind-Value="@Request.ExcludingLetters" />
+
+    <br/>
+
+    <label for="letter-count">
+        Letter Count
+    </label>
+
+    <InputNumber
+        id="letter-count"
+        @bind-Value="@Request.LetterCount" />
+
+    <br/>
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+@if (Results.Items.Any())
+{
+    <ol>
+        @foreach (var word in Results.Items)
+        {
+            <li>@word</li>
+        }
+    </ol>
+
+    <span>Showing @Results.Count of @Results.TotalCount Results</span>
+    <br />
+    <span>Page @(Results.PageIndex + 1) of @Results.TotalPageCount</span>
+    <br />
+
+    @if (Results.HasPreviousPage)
+    {
+        <button @onclick="GoToPreviousPage">Previous</button>
+    }
+    @if (Results.HasNextPage)
+    {
+        <button @onclick="GoToNextPage">Next</button>
+    }
+}
+
+@code {
+    private WordFinderRequest Request { get; set; } = new();
+    private PagedList<string> Results { get; set; } = new();
+
+    private static readonly JsonSerializerOptions options =
+        new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
+    private async Task FindWord()
+    {
+        var url =
+            $"api/FindWords{Request.ToString()}";
+
+        var response =
+            await Http.GetFromJsonAsync<PagedList<string>>(url, options);
+
+        Results = response ?? new();
+
+        this.StateHasChanged();
+    }
+
+    private async Task GoToPreviousPage()
+    {
+        Request.PageIndex -= 1;
+        await FindWord();
+    }
+
+    private async Task GoToNextPage()
+    {
+        Request.PageIndex += 1;
+        await FindWord();
+    }
+}

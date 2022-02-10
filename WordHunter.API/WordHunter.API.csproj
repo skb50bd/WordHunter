@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\WordHunter.Models\WordHunter.Models.csproj" />
+		<ProjectReference Include="..\WordHunter.Services\WordHunter.Services.csproj" />
+		<ProjectReference Include="..\WordHunter.WebUI\WordHunter.WebUI.csproj" />
+	</ItemGroup>
+
+</Project>
